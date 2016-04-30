@@ -1,5 +1,8 @@
 (:arguments "(_file &optional (name _file) &key (datetime (get-universal-time)))"
  :file "(make-pathname :defaults (merge-pathnames _file) :type \"ros\")"
+ :attr #o755
+ :encoding nil
+ :method :mustache
  :source "#!/bin/sh
 #|-*- mode:lisp -*-|#
 #| <Put a one-line description here>
