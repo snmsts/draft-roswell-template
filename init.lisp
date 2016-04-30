@@ -14,20 +14,21 @@
           until (eq o '+eof+)
           collect o)))
 
-(defvar *template-dir* (or #.*compile-file-pathname* *load-pathname*))
+(defparameter *template-dir* (or #.*compile-file-pathname* *load-pathname*))
 
-(defun render (argv)
-  (handler-case
-      (let* ((abs (make-pathname :defaults *template-dir* :name "template" :type "lisp"))
-             (param (first (read-file abs)))
-             (arg (arg-parse (getf param :arguments) (getf param :file) argv))
-             (path (second arg)))
-        (with-open-file (s path
-                           :direction :output
-                           :if-exists :supersede)
-          (mustache:render (getf param :source) (first arg) s)))
-    (file-error ()
-      (format t "Template file ~a does not exist" "template"))))
+(defun render (argv &optional (template "template"))
+  (let ((abs (make-pathname :defaults *template-dir* :name template :type "lisp")))
+    (mapcar (lambda (param)
+              (handler-case
+                  (let* ((arg (arg-parse (getf param :arguments) (getf param :file) argv))
+                         (path (second arg)))
+                    (with-open-file (s path
+                                       :direction :output
+                                       :if-exists :supersede)
+                      (mustache:render (getf param :source) (first arg) s)))
+                (file-error ()
+                  (format t "Template file ~a does not exist" "template"))))
+            (read-file abs))))
 
 (defun lispfy-args (list)
   (loop for i in list
