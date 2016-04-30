@@ -25,7 +25,9 @@
                     (with-open-file (s path
                                        :direction :output
                                        :if-exists :supersede)
-                      (mustache:render (getf param :source) (first arg) s)))
+                      (case (getf param :method) 
+                        (:mustache (mustache:render (getf param :source) (first arg) s))
+                        (t (format s "~A" (getf param :source)))))) ;; just copy
                 (file-error ()
                   (format t "Template file ~a does not exist" "template"))))
             (read-file abs))))
