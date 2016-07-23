@@ -22,7 +22,7 @@
               (handler-case
                   (let* ((arg (arg-parse (getf param :arguments) (getf param :file) argv))
                          (path (second arg)))
-                    (with-open-file (s path
+                    (with-open-file (s (ensure-directories-exist path)
                                        :direction :output
                                        :if-exists :supersede)
                       (case (getf param :method) 
